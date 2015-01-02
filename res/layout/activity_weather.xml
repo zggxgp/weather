@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_grey"
+    android:orientation="vertical" >
+    
+    <com.hz.weather.swiperefresh.PullToRefreshScrollView 
+       xmlns:ptr="http://schemas.android.com/apk/res-auto"
+       android:id="@+id/pull_refresh_scrollview"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:scrollbars="none"
+       ptr:ptrAnimationStyle="flip"
+       ptr:ptrMode="pullFromStart"
+        >
+        
+       
+
+
+	
+	<!-- 顶部城市和发布时间区域 -->
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:padding="16dp"
+	    >
+	    
+	    <!-- 顶部城市选择区域 -->
+	    <RelativeLayout 
+	        android:id="@+id/rl_city"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        >
+	        <TextView 
+	            android:id="@+id/tv_city"
+	            android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:layout_centerInParent="true"
+	        	android:textColor="@color/black"
+	        	android:text="上海"/>
+	        
+	        <ImageView 
+	            android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:layout_alignBottom="@id/tv_city"
+	        	android:layout_toRightOf="@id/tv_city"
+	        	android:layout_marginLeft="4dp"
+	        	android:src="@drawable/arrow"
+	            />
+	    </RelativeLayout>
+	    
+	    <!-- 发布时间 -->
+	    <TextView 
+	        android:id="@+id/tv_release"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:textColor="@color/black"
+	        android:layout_marginBottom="16dp"
+	        android:textSize="12sp"
+	        android:text="14:00发布"
+	        />
+	    
+	    <!-- 分割线 -->
+	    <View 
+	        android:layout_width="match_parent"
+	        android:layout_height="1dp"
+	        android:background="@color/light_grey"
+	        />
+	    
+	    <!-- 实时天气和PM2.5区域 -->
+	    <LinearLayout 
+	       		android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp" >
+	        
+	        <ImageView
+                    android:id="@+id/iv_now_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/d00" />
+
+                <TextView
+                    android:id="@+id/tv_now_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="4dp"
+                    android:text="晴"
+                    android:textColor="@color/black" />
+                
+	    </LinearLayout>
+	    
+	    <!-- 当天气温 -->
+	    <TextView
+                android:id="@+id/tv_today_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="22 13"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+	    
+	    <!-- 实时气温,PM2.5 -->
+	    
+	     <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                
+                android:layout_marginTop="16dp" >
+                
+	         	<!-- 实时气温 -->
+	         	<TextView
+                    android:id="@+id/tv_now_temp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="20"
+                    android:textColor="@color/black"
+                    android:textSize="48sp" />
+	         	    
+	         	
+	         	<!-- PM2.5 -->
+	         	<LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/wireframe_dark"
+                    android:orientation="vertical">
+
+	         	    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="PM2.5"
+                        android:textColor="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" >
+						
+                        <!-- 污染指数 -->
+                        <TextView
+                            android:id="@+id/tv_aqi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="288"
+                            android:textColor="@color/black" />
+						<!-- 污染级别 -->
+                        <TextView
+                            android:id="@+id/tv_quality"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="5"
+                            android:gravity="right"
+                            android:text="重度污染"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+                </LinearLayout>	         	
+         </LinearLayout>      
+         
+	     <!-- 未来三天天气 -->
+	     <LinearLayout 
+	         android:layout_width="match_parent"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/wireframe_dark"
+	         android:orientation="vertical"
+	         >
+	         	
+	         <TextView 
+	             android:layout_width="wrap_content"
+	             android:layout_height="wrap_content"
+	             android:layout_marginBottom="4dp"
+	             android:text="@string/forecast"
+	             />
+	         <View
+	             android:layout_width="match_parent"
+	             android:layout_height="1dp"
+	             android:background="@color/dark_grey"
+	             />
+	         
+	         <LinearLayout 
+	             android:layout_width="match_parent"
+	             android:layout_height="wrap_content"
+	             android:layout_marginTop="8dp"
+	             >
+	             
+	             <TextView 
+	                 android:id="@+id/tv_next_three"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:text="上午7时"
+	                 />
+	            
+	             <TextView 
+	                 android:id="@+id/tv_next_six"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:text="上午7时"
+	                 />
+	             <TextView 
+	                 android:id="@+id/tv_next_nine"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:text="上午7时"
+	                 />
+	             <TextView 
+	                 android:id="@+id/tv_next_twelve"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:text="上午7时"
+	                 />
+	              <TextView 
+	                 android:id="@+id/tv_next_fifteen"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:text="上午7时"
+	                 />
+	         </LinearLayout>
+	         
+	         <LinearLayout 
+	             android:layout_width="match_parent"
+	             android:layout_height="wrap_content"
+	             >
+	             
+	             <ImageView 
+	                 android:id="@+id/iv_next_three"
+	                 style="@style/ViewStyle"
+	                 android:src="@drawable/d00"
+	                 />
+	             
+	             <ImageView 
+	                 android:id="@+id/iv_next_six"
+	                 style="@style/ViewStyle"
+	                 android:src="@drawable/d00"
+	                 />
+	             
+	             <ImageView 
+	                 android:id="@+id/iv_next_nine"
+	                 style="@style/ViewStyle"
+	                 android:src="@drawable/d00"
+	                 />
+	             
+	             <ImageView 
+	                 android:id="@+id/iv_next_twelve"
+	                 style="@style/ViewStyle"
+	                 android:src="@drawable/d00"
+	                 />
+	             
+	             <ImageView 
+	                 android:id="@+id/iv_next_fifteen"
+	                 style="@style/ViewStyle"
+	                 android:src="@drawable/d00"
+	                 />
+	         </LinearLayout>
+	         
+	          <LinearLayout 
+	             android:layout_width="match_parent"
+	             android:layout_height="wrap_content"
+	             android:layout_marginTop="8dp"
+	             >
+	             
+	             <TextView 
+	                 android:id="@+id/tv_next_three_temp"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:gravity="center"
+	                 android:text="20"
+	                 />
+	            
+	             <TextView 
+	                 android:id="@+id/tv_next_six_temp"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:gravity="center"
+	                 android:text="20"
+	                 />
+	             <TextView 
+	                 android:id="@+id/tv_next_nine_temp"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:gravity="center"
+	                 android:text="20"
+	                 />
+	             <TextView 
+	                 android:id="@+id/tv_next_twelve_temp"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:gravity="center"
+	                 android:text="20"
+	                 />
+	              <TextView 
+	                 android:id="@+id/tv_next_fifteen_temp"
+	                 style="@style/TextViewStyle"
+	                 android:textColor="@color/black"
+	                 android:gravity="center"
+	                 android:text="20"
+	                 />
+	         </LinearLayout>
+	         
+	           <View
+	             android:layout_width="match_parent"
+	             android:layout_height="1dp"
+	             android:background="@color/dark_grey"
+	             />
+	           
+	           
+	           <!-- begin 未来三日天气之今天天气 -->
+	           <LinearLayout 
+	               android:layout_width="match_parent"
+	               android:layout_height="wrap_content"
+	               android:gravity="center"
+	               android:layout_marginTop="6dp"
+	               >
+	               
+	               <TextView 
+	                   style="@style/TextViewStyle"
+	                   android:gravity="left"
+	                   android:layout_weight="3"
+	                   android:paddingLeft="16dp"
+	                   android:textColor="@color/black"
+	                   android:text="@string/today"
+	                   />
+	               
+	               <ImageView 
+	                   android:id="@+id/iv_today_weather"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:src="@drawable/d00"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_today_temp_a"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="center"
+	                   android:textColor="@color/black"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_today_temp_b"
+	                   android:gravity="center"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:textColor="@color/black"
+	                   />
+	           </LinearLayout>
+	          <!--end 未来三日天气之今天天气 -->
+	          
+	           <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/dark_grey" />
+	          
+	          
+	          <!--begin 未来三日天气之明天天气 -->
+	          <LinearLayout 
+	               android:layout_width="match_parent"
+	               android:layout_height="wrap_content"
+	               android:gravity="center"
+	               android:layout_marginTop="6dp"
+	               >
+	               
+	               <TextView 
+	                   android:id="@+id/tv_tommorrow"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="left"
+	                   android:layout_weight="3"
+	                   android:paddingLeft="16dp"
+	                   android:textColor="@color/black"
+	                   android:text="@string/today"
+	                   />
+	               
+	               <ImageView 
+	                   android:id="@+id/iv_tommorrow_weather"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:src="@drawable/d00"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_tommorrow_temp_a"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="center"
+	                   android:textColor="@color/black"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_tommorrow_temp_b"
+	                   android:gravity="center"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:textColor="@color/black"
+	                   />
+	           </LinearLayout>
+	          
+	          <!-- end未来三日天气之明天天气 -->
+	          
+	          <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/dark_grey" />
+	          
+	           <!-- begin 未来三日天气之后天天气 -->
+	           
+	            <LinearLayout 
+	               android:layout_width="match_parent"
+	               android:layout_height="wrap_content"
+	               android:gravity="center"
+	               android:layout_marginTop="6dp"
+	               >
+	               
+	               <TextView 
+	                   android:id="@+id/tv_thrid"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="left"
+	                   android:layout_weight="3"
+	                   android:paddingLeft="16dp"
+	                   android:textColor="@color/black"
+	                   android:text="@string/today"
+	                   />
+	               
+	               <ImageView 
+	                   android:id="@+id/iv_thrid_weather"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:src="@drawable/d00"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_thrid_temp_a"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="center"
+	                   android:textColor="@color/black"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_thrid_temp_b"
+	                   android:gravity="center"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:textColor="@color/black"
+	                   />
+	           </LinearLayout>
+	          
+	           
+	           <!-- end 未来三日天气之后天天气 -->
+	           
+	               <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/dark_grey" />
+	               
+	           <!-- begin 未来三日天气之大后天天气 -->   
+	                
+	            <LinearLayout 
+	               android:layout_width="match_parent"
+	               android:layout_height="wrap_content"
+	               android:gravity="center"
+	               android:layout_marginTop="6dp"
+	               >
+	               
+	               <TextView 
+	                   android:id="@+id/tv_fourth"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="left"
+	                   android:layout_weight="3"
+	                   android:paddingLeft="16dp"
+	                   android:textColor="@color/black"
+	                   android:text="@string/today"
+	                   />
+	               
+	               <ImageView 
+	                   android:id="@+id/iv_fourth_weather"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:src="@drawable/d00"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_fourth_temp_a"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:gravity="center"
+	                   android:textColor="@color/black"
+	                   />
+	               
+	               <TextView 
+	                   android:id="@+id/tv_fourth_temp_b"
+	                   android:gravity="center"
+	                   android:layout_weight="4"
+	                   style="@style/TextViewStyle"
+	                   android:textColor="@color/black"
+	                   />
+	           </LinearLayout>
+	           <!-- end 未来三日天气之大后天天气 -->   
+	     </LinearLayout>
+	     
+	     <!--天气详细信息区域 -->
+	     
+	     <LinearLayout 
+	         android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/wireframe_dark"
+                android:orientation="vertical"
+	         >
+	         <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/information"
+                    android:textColor="@color/dark_grey" />
+	         
+	            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_grey" />
+	         	
+	            <LinearLayout 
+	                android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+	                >
+	                
+	                <TextView
+                        style="@style/TextViewStyle"
+                        android:textColor="@color/black"
+                        android:gravity="left"
+                        android:paddingLeft="16dp"
+                        android:text="@string/felt_air_temp" />
+
+                    <TextView
+                        android:id="@+id/tv_felt_air_temp"
+                        android:textColor="@color/black"
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:paddingLeft="16dp" />
+	            </LinearLayout>
+	            
+	            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/light_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" >
+
+                    <TextView
+                        style="@style/TextViewStyle"
+                        android:textColor="@color/black"
+                        android:gravity="left"
+                        android:paddingLeft="16dp"
+                        android:text="@string/humidity" />
+
+                    <TextView
+                        android:id="@+id/tv_humidity"
+                        android:textColor="@color/black"
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:paddingLeft="16dp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/light_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" >
+
+                    <TextView
+                        style="@style/TextViewStyle"
+                        android:textColor="@color/black"
+                        android:gravity="left"
+                        android:paddingLeft="16dp"
+                        android:text="@string/wind" />
+
+                    <TextView
+                        android:id="@+id/tv_wind"
+                        android:textColor="@color/black"
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:paddingLeft="16dp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/light_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" >
+
+                    <TextView
+                        style="@style/TextViewStyle"
+                        android:textColor="@color/black"
+                        android:gravity="left"
+                        android:paddingLeft="16dp"
+                        android:text="@string/uv_index" />
+
+                    <TextView
+                        android:id="@+id/tv_uv_index"
+                        android:textColor="@color/black"
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:paddingLeft="16dp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/light_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" >
+
+                    <TextView
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:textColor="@color/black"
+                        android:paddingLeft="16dp"
+                        android:text="@string/dressing_index" />
+
+                    <TextView
+                        android:id="@+id/tv_dressing_index"
+                        android:textColor="@color/black"
+                        style="@style/TextViewStyle"
+                        android:gravity="left"
+                        android:paddingLeft="16dp" />
+                </LinearLayout>
+	     </LinearLayout>
+	     
+	     
+	</LinearLayout>
+	
+	    </com.hz.weather.swiperefresh.PullToRefreshScrollView>
+</LinearLayout>

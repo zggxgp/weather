@@ -193,31 +193,37 @@
 	                 android:id="@+id/tv_next_three"
 	                 style="@style/TextViewStyle"
 	                 android:textColor="@color/black"
+	                 android:gravity="center"
 	                 android:text="上午7时"
+	                 
 	                 />
 	            
 	             <TextView 
 	                 android:id="@+id/tv_next_six"
 	                 style="@style/TextViewStyle"
 	                 android:textColor="@color/black"
+	                 android:gravity="center"
 	                 android:text="上午7时"
 	                 />
 	             <TextView 
 	                 android:id="@+id/tv_next_nine"
 	                 style="@style/TextViewStyle"
 	                 android:textColor="@color/black"
+	                 android:gravity="center"
 	                 android:text="上午7时"
 	                 />
 	             <TextView 
 	                 android:id="@+id/tv_next_twelve"
 	                 style="@style/TextViewStyle"
 	                 android:textColor="@color/black"
+	                 android:gravity="center"
 	                 android:text="上午7时"
 	                 />
 	              <TextView 
 	                 android:id="@+id/tv_next_fifteen"
 	                 style="@style/TextViewStyle"
 	                 android:textColor="@color/black"
+	                 android:gravity="center"
 	                 android:text="上午7时"
 	                 />
 	         </LinearLayout>

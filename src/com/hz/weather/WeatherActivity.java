@@ -1,35 +1,44 @@
 package com.hz.weather;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.hz.weather.bean.FutureWeatherBean;
+import com.hz.weather.bean.HoursWeatherBean;
+import com.hz.weather.bean.PMBean;
 import com.hz.weather.bean.WeatherBean;
+import com.hz.weather.service.WeatherService;
+import com.hz.weather.service.WeatherService.OnParserCallBack;
+import com.hz.weather.service.WeatherService.WeatherServiceBinder;
 import com.hz.weather.swiperefresh.PullToRefreshBase;
 import com.hz.weather.swiperefresh.PullToRefreshBase.OnRefreshListener;
 import com.hz.weather.swiperefresh.PullToRefreshScrollView;
-import com.thinkland.juheapi.common.JsonCallBack;
-import com.thinkland.juheapi.data.weather.WeatherData;
 
 public class WeatherActivity extends Activity{
 	
 	private TextView tv;//测试用
-	
+	private Context mContext;
 	private PullToRefreshScrollView mPullToRefreshScrollView;
 	private ScrollView mScrollView;
+	private WeatherService mWeatherService;
+	
+	private RelativeLayout rl_city;
+
 	
 	private TextView tv_city,// 城市
 			tv_release,// 发布时间
@@ -75,97 +84,168 @@ public class WeatherActivity extends Activity{
 			iv_fourthday_weather;// 第四天
 	
 	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_weather);
-		getCityWeather();
-		init();
 		
+		mContext = this;
+		init();
+		initService();
 		
 	}
 	
-	//解析获取到的数据
-	private WeatherBean parseWeather(JSONObject json){
+	private void initService(){
+		Intent intent = new Intent(mContext, WeatherService.class);
 		
-		WeatherBean weatherBean = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		startService(intent);
 		
+		bindService(intent, conn , Context.BIND_AUTO_CREATE);
+	}
+	
+	ServiceConnection conn = new ServiceConnection() {
 		
-		try{
-			int code = json.getInt("resultcode");
-			int errorcode = json.getInt("error_code");
-			if(errorcode==0&&code==200){
-				JSONObject resultJson = json.getJSONObject("result");
-				 weatherBean = new WeatherBean();
-				
-				//获取今天天气的json
-				JSONObject todayJson = resultJson.getJSONObject("today");
-				weatherBean.setUv_index(todayJson.getString("uv_index"));
-				weatherBean.setTemp(todayJson.getString("temperature"));
-				weatherBean.setWeather_str(todayJson.getString("weather"));
-				weatherBean.setWeather_id(todayJson.getJSONObject("weather_id").getString("fa"));
-				weatherBean.setDressing_index(todayJson.getString("dressing_index"));
-				
-				//解析sk json
-				JSONObject skJson = resultJson.getJSONObject("sk");
-				weatherBean.setWind(skJson.getString("wind_direction")+"  "+skJson.getString("wind_strength"));
-				weatherBean.setNow_temp(skJson.getString("temp"));
-				weatherBean.setRelease(skJson.getString("time"));
-				weatherBean.setHumidity(skJson.getString("humidity"));
-				
-				//解析未来几天天气JSON
-				JSONArray futureArray = resultJson.getJSONArray("future");
-				Date date = new Date(System.currentTimeMillis());
-				List<FutureWeatherBean> futureList = new ArrayList<FutureWeatherBean>();
-				
-				for(int i=0;i<futureArray.length();i++){
-					JSONObject futureJson = futureArray.getJSONObject(i);
-					FutureWeatherBean  futureBean = new FutureWeatherBean();
-					
-					Date datef = sdf.parse(futureJson.getString("date"));
-					if(!datef.after(date)){
-						continue;
-					}
-					futureBean.setTemp(futureJson.getString("temperature"));
-					futureBean.setWeek(futureJson.getString("week"));
-					futureBean.setWeather_id(futureJson.getJSONObject("weather_id").getString("fa"));
-					futureList.add(futureBean);
-					if(futureList.size()>=3){
-						break;
-					}
-				}
-				
-				weatherBean.setFutureList(futureList);
-				
-				
-			}
-		}catch(JSONException e){
-			e.printStackTrace();
-		}catch(ParseException e){
-			e.printStackTrace();
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mWeatherService.removeCallBack();
+			
 		}
 		
-		return weatherBean;
-	}
-	
-	
-	//按城市获取天气数据
-	private void getCityWeather(){
-		
-		WeatherData date = WeatherData.getInstance();
-
-		date.getByCitys("上海", 2, new JsonCallBack() {
-
-			@Override
-			public void jsonLoaded(JSONObject arg0) {
+		@Override
+		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+			
+			mWeatherService = ((WeatherServiceBinder)arg1).getService();
+			mWeatherService.setCallBack(new OnParserCallBack() {
 				
-				System.out.println(arg0.toString());
+				@Override
+				public void OnParserComplete(List<HoursWeatherBean> list, PMBean pmBean,
+						WeatherBean weatherBean) {
+					
+					
+					
+                    if (list != null && list.size() >= 5) {
+                    	
+                        setHourViews(list);
+                    }
 
-			}
-		});
+                    if (pmBean != null) {
+                    	
+                        setPMView(pmBean);
+                    }
+
+                    if (weatherBean != null) {
+                    	
+                    	
+                        setWeatherViews(weatherBean);
+                    }
+					
+                    mPullToRefreshScrollView.onRefreshComplete();
+				}
+			});
+			
+			mWeatherService.getCityWeather();
+		}
+	};
+	
+	//填充数据
+	private void setWeatherViews(WeatherBean weatherBean){
+		//填充城市和发布时间
+      	tv_city.setText(weatherBean.getCity());
+      	tv_release.setText(weatherBean.getRelease());
+      	
+      	//填充当天气温
+      	String[] tempArr = weatherBean.getTemp().split("~");
+      	String temp_str_a = tempArr[1].substring(0, tempArr[1].indexOf("℃"));
+      	String temp_str_b = tempArr[0].substring(0, tempArr[0].indexOf("℃"));
+      	tv_today_temp.setText("↑"+temp_str_a+"°     ↓"+temp_str_b+"°");
+      	tv_now_temp.setText(weatherBean.getNow_temp());
+      	tv_today_temp_a.setText(temp_str_a + "°");
+        tv_today_temp_b.setText(temp_str_b + "°");
+        
+        Calendar c = Calendar.getInstance();
+        int time = c.get(Calendar.HOUR_OF_DAY);
+        String prefixStr = null;
+        if (time >= 6 && time < 18) {
+            prefixStr = "d";
+        } else {
+            prefixStr = "n";
+        }
+        iv_now_weather.setImageResource(getResources().getIdentifier(prefixStr +weatherBean.getWeather_id(), "drawable", "com.hz.weather"));
+        
+        
+        iv_today_weather.setImageResource(getResources().getIdentifier("d"+weatherBean.getWeather_id(), "drawable", "com.hz.weather"));
+        
+        //填充未来天气
+        List<FutureWeatherBean> futureList = weatherBean.getFutureList();
+        if (futureList != null && futureList.size() == 3) {
+            setFutureViews(tv_tommorrow, iv_tommorrow_weather, tv_tommorrow_temp_a, tv_tommorrow_temp_b, futureList.get(0));
+            setFutureViews(tv_thirdday, iv_thirdday_weather, tv_thirdday_temp_a, tv_thirdday_temp_b, futureList.get(1));
+            setFutureViews(tv_fourthday, iv_fourthday_weather, tv_fourthday_temp_a, tv_fourthday_temp_b, futureList.get(2));
+        } 
+        
+        //详细信息
+        tv_humidity.setText(weatherBean.getHumidity());
+        tv_dressing_index.setText(weatherBean.getDressing_index());
+        tv_uv_index.setText(weatherBean.getUv_index());
+        tv_wind.setText(weatherBean.getWind());
+         
 	}
+	
+	
+	//填充未来天气数据
+	 private void setFutureViews(TextView tv_week, ImageView iv_weather, TextView tv_temp_a, TextView tv_temp_b, FutureWeatherBean bean) {
+	        tv_week.setText(bean.getWeek());
+	        iv_weather.setImageResource(getResources().getIdentifier("d" + bean.getWeather_id(), "drawable", "com.hz.weather"));
+	        String[] tempArr = bean.getTemp().split("~");
+	        String temp_str_a = tempArr[1].substring(0, tempArr[1].indexOf("℃"));
+	        String temp_str_b = tempArr[0].substring(0, tempArr[0].indexOf("℃"));
+	        tv_temp_a.setText(temp_str_a + "°");
+	        tv_temp_b.setText(temp_str_b + "°");
+
+	    }
+	
+	 //填充未来3小时天气
+	 
+	 private void setHourViews(List<HoursWeatherBean> list) {
+	        setHourData(tv_next_three, iv_next_three, tv_next_three_temp, list.get(0));
+	        setHourData(tv_next_six, iv_next_six, tv_next_six_temp, list.get(1));
+	        setHourData(tv_next_nine, iv_next_nine, tv_next_nine_temp, list.get(2));
+	        setHourData(tv_next_twelve, iv_next_twelve, tv_next_twelve_temp, list.get(3));
+	        setHourData(tv_next_fifteen, iv_next_fifteen, tv_next_fifteen_temp, list.get(4));
+	    }
+
+	    private void setHourData(TextView tv_hour, ImageView iv_weather, TextView tv_temp, HoursWeatherBean bean) {
+
+	        String prefixStr = null;
+	        int time = Integer.valueOf(bean.getTime());
+	        if (time >= 6 && time < 18) {
+	            prefixStr = "d";
+	        } else {
+	            prefixStr = "n";
+	        }
+
+	        tv_hour.setText(bean.getTime() + "时");
+	        iv_weather.setImageResource(getResources().getIdentifier(prefixStr + bean.getWeather_id(), "drawable", "com.juhe.weather"));
+	        tv_temp.setText(bean.getTemp() + "°");
+	    }
+	 
+	 //填充PM区域
+	    private void setPMView(PMBean bean) {
+	        tv_aqi.setText(bean.getAqi());
+	        tv_quality.setText(bean.getQuality());
+	    }
+
+	    
+	    
+	
+	
+	
+	 
+	 
+	
 	
 	public void init(){
 		
@@ -175,13 +255,24 @@ public class WeatherActivity extends Activity{
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
-				
+				mWeatherService.getCityWeather();
 				
 			}
 				
 			
 		});
 			
+		rl_city = (RelativeLayout) findViewById(R.id.rl_city);
+        rl_city.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                startActivityForResult(new Intent(mContext, CityActivity.class), 1);
+
+            }
+        });
+		
 		
 		
 		 tv_city = (TextView) findViewById(R.id.tv_city);
@@ -227,6 +318,28 @@ public class WeatherActivity extends Activity{
 	        iv_tommorrow_weather = (ImageView) findViewById(R.id.iv_tommorrow_weather);
 	        iv_thirdday_weather = (ImageView) findViewById(R.id.iv_thrid_weather);
 	        iv_fourthday_weather = (ImageView) findViewById(R.id.iv_fourth_weather);
+	}
+	
+	 @Override
+	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	        // TODO Auto-generated method stub
+		 	
+		 	Log.i("resulttest", "onActivityResul执行");
+		 		
+	        if (requestCode == 1 && resultCode == 1) {
+	            String city = data.getStringExtra("city");
+	            mWeatherService.getCityWeather(city);
+	        }
+            
+	    }
+	
+	@Override
+	protected void onDestroy() {
+		
+		unbindService(conn);
+		//mWeatherService.stopSelf();
+		super.onDestroy();
+		
 	}
 	
 	

@@ -39,6 +39,14 @@
             </intent-filter>
  
         </activity>
+        
+        <activity
+            android:name="com.hz.weather.CityActivity"
+            android:screenOrientation="portrait" />
+        
+        <service 
+            android:name="com.hz.weather.service.WeatherService"
+            ></service>
     </application>
 
 </manifest>
